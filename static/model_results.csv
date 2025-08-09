@@ -1,0 +1,13 @@
+Model_Type,Model_Name,Primary_Metric,Secondary_Metric
+Regression,Linear Regression,0.9340885843217636,0.20545613555594622
+Regression,Ridge Regression,0.9326664376901309,0.2098891878295546
+Regression,Lasso Regression,0.8656757919186846,0.4187094514662729
+Regression,Random Forest Regressor,0.992866145773925,0.02223733333333334
+Regression,Gradient Boosting Regressor,0.9981274405517145,0.005837059087331141
+Regression,SVR,0.9600130692931143,0.12464548320258383
+Regression,MLP Regressor,0.9743088674556367,0.08008325653917621
+Regression,Decision Tree Regressor,1.0,0.0
+Regression,KNN Regressor,0.9539751340253222,0.14346666666666666
+Classification,Logistic Regression,0.92,0.9197740112994349
+Classification,Random Forest Classifier,1.0,0.9598305084745762
+Classification,SVC,0.9066666666666666,0.9364406779661018

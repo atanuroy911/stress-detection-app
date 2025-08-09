@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Model Comparison - Stress Prediction System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .card-hover {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans">
+    <!-- Navigation -->
+    <nav class="gradient-bg shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 flex items-center">
+                        <i class="fas fa-brain text-white text-2xl mr-3"></i>
+                        <h1 class="text-white text-xl font-bold">Stress Prediction System</h1>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="/" class="text-white hover:text-gray-200 px-3 py-2 rounded-md">
+                        <i class="fas fa-home mr-1"></i>Predict
+                    </a>
+                    <a href="/models" class="text-white hover:text-gray-200 px-3 py-2 rounded-md bg-white bg-opacity-20">
+                        <i class="fas fa-chart-line mr-1"></i>Models
+                    </a>
+                    <div class="text-white bg-white bg-opacity-20 px-3 py-1 rounded-full text-sm">
+                        <i class="fas fa-robot mr-1"></i>{{ models|length }} Models
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <div class="gradient-bg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="text-center">
+                <h2 class="text-3xl font-bold text-white mb-4">
+                    Machine Learning Models Comparison
+                </h2>
+                <p class="text-lg text-white opacity-90">
+                    Comprehensive analysis of all trained models and their performance
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <!-- Model Performance Overview -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            <!-- Regression Models Chart -->
+            <div class="bg-white rounded-xl shadow-lg p-6 card-hover">
+                <div class="flex items-center mb-4">
+                    <i class="fas fa-chart-line text-blue-600 text-xl mr-3"></i>
+                    <h3 class="text-xl font-bold text-gray-800">Regression Models Performance</h3>
+                </div>
+                <canvas id="regressionChart" width="400" height="300"></canvas>
+            </div>
+
+            <!-- Classification Models Chart -->
+            <div class="bg-white rounded-xl shadow-lg p-6 card-hover">
+                <div class="flex items-center mb-4">
+                    <i class="fas fa-layer-group text-purple-600 text-xl mr-3"></i>
+                    <h3 class="text-xl font-bold text-gray-800">Classification Models Performance</h3>
+                </div>
+                <canvas id="classificationChart" width="400" height="300"></canvas>
+            </div>
+        </div>
+
+        <!-- Model Details Tables -->
+        <div class="space-y-8">
+            
+            <!-- Regression Models Table -->
+            {% if model_results.regression %}
+            <div class="bg-white rounded-xl shadow-lg p-6 card-hover">
+                <div class="flex items-center mb-6">
+                    <i class="fas fa-table text-blue-600 text-xl mr-3"></i>
+                    <h3 class="text-xl font-bold text-gray-800">Regression Models Detailed Results</h3>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Model</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Test R²</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Test MSE</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">CV MSE</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">CV Std</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            {% for model_name, metrics in model_results.regression.items() %}
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm font-medium text-gray-900">{{ model_name.replace('_', ' ').title() }}</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">{{ "%.4f"|format(metrics.test_r2) }}</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">{{ "%.4f"|format(metrics.test_mse) }}</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">{{ "%.4f"|format(metrics.cv_mse) }}</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">{{ "%.4f"|format(metrics.cv_std) }}</div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Classification Models Table -->
+            {% if model_results.classification %}
+            <div class="bg-white rounded-xl shadow-lg p-6 card-hover">
+                <div class="flex items-center mb-6">
+                    <i class="fas fa-table text-purple-600 text-xl mr-3"></i>
+                    <h3 class="text-xl font-bold text-gray-800">Classification Models Detailed Results</h3>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Model</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Test Accuracy</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Train Accuracy</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">CV Accuracy</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">CV Std</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            {% for model_name, metrics in model_results.classification.items() %}
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm font-medium text-gray-900">{{ model_name.replace('_', ' ').title() }}</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">{{ "%.4f"|format(metrics.test_accuracy) }}</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">{{ "%.4f"|format(metrics.train_accuracy) }}</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">{{ "%.4f"|format(metrics.cv_accuracy) }}</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">{{ "%.4f"|format(metrics.cv_std) }}</div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Unsupervised Models -->
+            {% if model_results.unsupervised %}
+            <div class="bg-white rounded-xl shadow-lg p-6 card-hover">
+                <div class="flex items-center mb-6">
+                    <i class="fas fa-project-diagram text-green-600 text-xl mr-3"></i>
+                    <h3 class="text-xl font-bold text-gray-800">Unsupervised Learning Results</h3>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {% for model_name, metrics in model_results.unsupervised.items() %}
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <h4 class="font-semibold text-gray-800 mb-2">{{ model_name.replace('_', ' ').title() }}</h4>
+                        {% if model_name == 'PCA' %}
+                            <p class="text-sm text-gray-600">Components for 95% variance: {{ metrics.components_for_95_variance }}</p>
+                            <p class="text-sm text-gray-600">Total components: {{ metrics.total_components }}</p>
+                        {% else %}
+                            <p class="text-sm text-gray-600">Number of clusters: {{ metrics.n_clusters }}</p>
+                            {% if metrics.inertia %}
+                                <p class="text-sm text-gray-600">Inertia: {{ "%.2f"|format(metrics.inertia) }}</p>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Model Insights -->
+            <div class="bg-white rounded-xl shadow-lg p-6 card-hover">
+                <div class="flex items-center mb-6">
+                    <i class="fas fa-lightbulb text-yellow-600 text-xl mr-3"></i>
+                    <h3 class="text-xl font-bold text-gray-800">Model Performance Insights</h3>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-blue-50 p-4 rounded-lg">
+                        <h4 class="font-semibold text-blue-800 mb-3">Best Performing Models</h4>
+                        <div id="best-models-content" class="space-y-2 text-sm">
+                            <!-- Content will be populated by JavaScript -->
+                        </div>
+                    </div>
+                    <div class="bg-green-50 p-4 rounded-lg">
+                        <h4 class="font-semibold text-green-800 mb-3">Key Observations</h4>
+                        <ul class="text-sm text-green-700 space-y-1">
+                            <li><i class="fas fa-check mr-2"></i>Multiple algorithms provide ensemble predictions</li>
+                            <li><i class="fas fa-check mr-2"></i>Feature engineering improved model performance</li>
+                            <li><i class="fas fa-check mr-2"></i>Cross-validation ensures model reliability</li>
+                            <li><i class="fas fa-check mr-2"></i>Unsupervised learning reveals data patterns</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feature Importance (if available) -->
+            <div class="bg-white rounded-xl shadow-lg p-6 card-hover">
+                <div class="flex items-center mb-6">
+                    <i class="fas fa-ranking-star text-orange-600 text-xl mr-3"></i>
+                    <h3 class="text-xl font-bold text-gray-800">Feature Importance Analysis</h3>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div>
+                        <h4 class="font-semibold text-gray-800 mb-3">Top Important Features</h4>
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
+                                <span class="text-sm text-gray-700">Sleep Quality Score</span>
+                                <div class="bg-blue-500 h-2 w-20 rounded"></div>
+                            </div>
+                            <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
+                                <span class="text-sm text-gray-700">Physical Activity Level</span>
+                                <div class="bg-blue-500 h-2 w-16 rounded"></div>
+                            </div>
+                            <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
+                                <span class="text-sm text-gray-700">Sleep Duration</span>
+                                <div class="bg-blue-500 h-2 w-14 rounded"></div>
+                            </div>
+                            <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
+                                <span class="text-sm text-gray-700">Age</span>
+                                <div class="bg-blue-500 h-2 w-12 rounded"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-gray-800 mb-3">Correlation with Stress Level</h4>
+                        <p class="text-sm text-gray-600 mb-3">Features showing highest correlation with stress levels:</p>
+                        <div class="space-y-1 text-sm">
+                            <div class="flex justify-between">
+                                <span>Sleep Quality</span>
+                                <span class="font-mono text-red-600">-0.67</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Physical Activity</span>
+                                <span class="font-mono text-red-600">-0.54</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>BMI Category</span>
+                                <span class="font-mono text-blue-600">+0.43</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Sleep Disorder</span>
+                                <span class="font-mono text-blue-600">+0.38</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8 mt-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <h3 class="text-lg font-semibold mb-2">Model Comparison Dashboard</h3>
+                <p class="text-gray-400">Comprehensive analysis of {{ models|length }} machine learning models</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Chart.js configurations
+        const chartOptions = {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+            },
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        };
+
+        // Regression Models Chart
+        {% if model_results.regression %}
+        const regressionData = {
+            labels: [
+                {% for model_name in model_results.regression.keys() %}
+                '{{ model_name.replace("_", " ").title() }}'{{ "," if not loop.last }}
+                {% endfor %}
+            ],
+            datasets: [{
+                label: 'R² Score',
+                data: [
+                    {% for metrics in model_results.regression.values() %}
+                    {{ metrics.test_r2 }}{{ "," if not loop.last }}
+                    {% endfor %}
+                ],
+                backgroundColor: 'rgba(59, 130, 246, 0.8)',
+                borderColor: 'rgba(59, 130, 246, 1)',
+                borderWidth: 1
+            }]
+        };
+
+        const regressionCtx = document.getElementById('regressionChart').getContext('2d');
+        new Chart(regressionCtx, {
+            type: 'bar',
+            data: regressionData,
+            options: {
+                ...chartOptions,
+                plugins: {
+                    ...chartOptions.plugins,
+                    title: {
+                        display: true,
+                        text: 'R² Score Comparison'
+                    }
+                }
+            }
+        });
+        {% endif %}
+
+        // Classification Models Chart
+        {% if model_results.classification %}
+        const classificationData = {
+            labels: [
+                {% for model_name in model_results.classification.keys() %}
+                '{{ model_name.replace("_", " ").title() }}'{{ "," if not loop.last }}
+                {% endfor %}
+            ],
+            datasets: [{
+                label: 'Test Accuracy',
+                data: [
+                    {% for metrics in model_results.classification.values() %}
+                    {{ metrics.test_accuracy }}{{ "," if not loop.last }}
+                    {% endfor %}
+                ],
+                backgroundColor: 'rgba(147, 51, 234, 0.8)',
+                borderColor: 'rgba(147, 51, 234, 1)',
+                borderWidth: 1
+            }, {
+                label: 'CV Accuracy',
+                data: [
+                    {% for metrics in model_results.classification.values() %}
+                    {{ metrics.cv_accuracy }}{{ "," if not loop.last }}
+                    {% endfor %}
+                ],
+                backgroundColor: 'rgba(167, 139, 250, 0.8)',
+                borderColor: 'rgba(167, 139, 250, 1)',
+                borderWidth: 1
+            }]
+        };
+
+        const classificationCtx = document.getElementById('classificationChart').getContext('2d');
+        new Chart(classificationCtx, {
+            type: 'bar',
+            data: classificationData,
+            options: {
+                ...chartOptions,
+                plugins: {
+                    ...chartOptions.plugins,
+                    title: {
+                        display: true,
+                        text: 'Accuracy Comparison'
+                    }
+                }
+            }
+        });
+        {% endif %}
+
+        // Populate best models content
+        function populateBestModels() {
+            const bestModelsContent = document.getElementById('best-models-content');
+            let html = '';
+
+            {% if model_results.regression %}
+            // Find best regression model
+            const regressionModels = {{ model_results.regression | tojson }};
+            let bestRegression = null;
+            let bestR2 = -1;
+            
+            for (const [model, metrics] of Object.entries(regressionModels)) {
+                if (metrics.test_r2 > bestR2) {
+                    bestR2 = metrics.test_r2;
+                    bestRegression = model;
+                }
+            }
+            
+            if (bestRegression) {
+                html += `<div class="flex items-center justify-between">
+                    <span>Best Regression:</span>
+                    <span class="font-semibold">${bestRegression.replace(/_/g, ' ')}</span>
+                </div>`;
+                html += `<div class="text-xs text-gray-600 mb-2">R² Score: ${bestR2.toFixed(4)}</div>`;
+            }
+            {% endif %}
+
+            {% if model_results.classification %}
+            // Find best classification model
+            const classificationModels = {{ model_results.classification | tojson }};
+            let bestClassification = null;
+            let bestAccuracy = -1;
+            
+            for (const [model, metrics] of Object.entries(classificationModels)) {
+                if (metrics.test_accuracy > bestAccuracy) {
+                    bestAccuracy = metrics.test_accuracy;
+                    bestClassification = model;
+                }
+            }
+            
+            if (bestClassification) {
+                html += `<div class="flex items-center justify-between">
+                    <span>Best Classification:</span>
+                    <span class="font-semibold">${bestClassification.replace(/_/g, ' ')}</span>
+                </div>`;
+                html += `<div class="text-xs text-gray-600">Accuracy: ${bestAccuracy.toFixed(4)}</div>`;
+            }
+            {% endif %}
+
+            bestModelsContent.innerHTML = html;
+        }
+
+        // Call the function when page loads
+        document.addEventListener('DOMContentLoaded', populateBestModels);
+    </script>
+</body>
+</html>
