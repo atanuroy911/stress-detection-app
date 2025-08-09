@@ -145,152 +145,149 @@ def get_health_recommendations(stress_level, sleep_duration, physical_activity, 
 @app.get("/", response_class=HTMLResponse)
 async def home():
     """Serve the main page"""
-    try:
-        with open("public/index.html", "r", encoding="utf-8") as f:
-            return HTMLResponse(f.read())
-    except FileNotFoundError:
-        return HTMLResponse(f"""
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <title>Stress Level Prediction System</title>
-            <script src="https://cdn.tailwindcss.com"></script>
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        </head>
-        <body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
-            <div class="container mx-auto px-4 py-8">
-                <h1 class="text-4xl font-bold text-center text-indigo-800 mb-4">
-                    🧠 Stress Level Prediction System
-                </h1>
-                <p class="text-center text-gray-600 mb-8">AI-Powered Health Assessment Tool</p>
+    # Always return the embedded HTML instead of trying to read files
+    return HTMLResponse(f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Stress Level Prediction System</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+        <div class="container mx-auto px-4 py-8">
+            <h1 class="text-4xl font-bold text-center text-indigo-800 mb-4">
+                🧠 Stress Level Prediction System
+            </h1>
+            <p class="text-center text-gray-600 mb-8">AI-Powered Health Assessment Tool</p>
+            
+            <div class="max-w-2xl mx-auto bg-white rounded-xl shadow-lg p-8">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-6">Quick Health Assessment</h2>
                 
-                <div class="max-w-2xl mx-auto bg-white rounded-xl shadow-lg p-8">
-                    <h2 class="text-2xl font-semibold text-gray-800 mb-6">Quick Health Assessment</h2>
-                    
-                    <form id="assessmentForm" class="space-y-4">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Age</label>
-                                <input type="number" name="age" value="30" min="18" max="100" 
-                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500">
-                            </div>
-                            
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Sleep Duration (hours)</label>
-                                <input type="number" name="sleep_duration" value="7" min="4" max="12" step="0.1"
-                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500">
-                            </div>
-                            
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Physical Activity (min/day)</label>
-                                <input type="number" name="physical_activity_level" value="30" min="0" max="300"
-                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500">
-                            </div>
-                            
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Heart Rate (BPM)</label>
-                                <input type="number" name="heart_rate" value="70" min="40" max="200"
-                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500">
-                            </div>
-                            
-                            <div class="md:col-span-2">
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Sleep Quality (1-10 scale)</label>
-                                <select name="quality_of_sleep" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500">
-                                    <option value="1">1 - Very Poor</option>
-                                    <option value="2">2 - Poor</option>
-                                    <option value="3">3 - Below Average</option>
-                                    <option value="4">4 - Fair</option>
-                                    <option value="5">5 - Average</option>
-                                    <option value="6">6 - Above Average</option>
-                                    <option value="7" selected>7 - Good</option>
-                                    <option value="8">8 - Very Good</option>
-                                    <option value="9">9 - Excellent</option>
-                                    <option value="10">10 - Perfect</option>
-                                </select>
-                            </div>
+                <form id="assessmentForm" class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Age</label>
+                            <input type="number" name="age" value="30" min="18" max="100" 
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500">
                         </div>
                         
-                        <button type="submit" class="w-full bg-indigo-600 text-white py-3 px-6 rounded-md hover:bg-indigo-700 transition duration-200 font-semibold text-lg">
-                            🔮 Analyze My Stress Level
-                        </button>
-                    </form>
-                    
-                    <div id="results" class="mt-8 p-6 bg-gray-50 rounded-lg hidden">
-                        <div id="resultsContent"></div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Sleep Duration (hours)</label>
+                            <input type="number" name="sleep_duration" value="7" min="4" max="12" step="0.1"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Physical Activity (min/day)</label>
+                            <input type="number" name="physical_activity_level" value="30" min="0" max="300"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Heart Rate (BPM)</label>
+                            <input type="number" name="heart_rate" value="70" min="40" max="200"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                        
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Sleep Quality (1-10 scale)</label>
+                            <select name="quality_of_sleep" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500">
+                                <option value="1">1 - Very Poor</option>
+                                <option value="2">2 - Poor</option>
+                                <option value="3">3 - Below Average</option>
+                                <option value="4">4 - Fair</option>
+                                <option value="5">5 - Average</option>
+                                <option value="6">6 - Above Average</option>
+                                <option value="7" selected>7 - Good</option>
+                                <option value="8">8 - Very Good</option>
+                                <option value="9">9 - Excellent</option>
+                                <option value="10">10 - Perfect</option>
+                            </select>
+                        </div>
                     </div>
-                </div>
+                    
+                    <button type="submit" class="w-full bg-indigo-600 text-white py-3 px-6 rounded-md hover:bg-indigo-700 transition duration-200 font-semibold text-lg">
+                        🔮 Analyze My Stress Level
+                    </button>
+                </form>
                 
-                <div class="max-w-2xl mx-auto mt-8 text-center text-sm text-gray-500">
-                    <p>⚠️ This tool is for educational purposes only and should not replace professional medical advice.</p>
+                <div id="results" class="mt-8 p-6 bg-gray-50 rounded-lg hidden">
+                    <div id="resultsContent"></div>
                 </div>
             </div>
+            
+            <div class="max-w-2xl mx-auto mt-8 text-center text-sm text-gray-500">
+                <p>⚠️ This tool is for educational purposes only and should not replace professional medical advice.</p>
+            </div>
+        </div>
 
-            <script>
-                document.getElementById('assessmentForm').onsubmit = async (e) => {{
-                    e.preventDefault();
-                    const formData = new FormData(e.target);
-                    
-                    try {{
-                        const response = await fetch('/predict', {{
-                            method: 'POST',
-                            body: formData
-                        }});
-                        
-                        const result = await response.json();
-                        displayResults(result);
-                    }} catch (error) {{
-                        console.error('Error:', error);
-                        alert('Analysis failed. Please try again.');
-                    }}
-                }};
+        <script>
+            document.getElementById('assessmentForm').onsubmit = async (e) => {{
+                e.preventDefault();
+                const formData = new FormData(e.target);
                 
-                function displayResults(result) {{
-                    const resultsDiv = document.getElementById('results');
-                    const resultsContent = document.getElementById('resultsContent');
+                try {{
+                    const response = await fetch('/predict', {{
+                        method: 'POST',
+                        body: formData
+                    }});
                     
-                    const stressColor = result.stress_level > 7 ? 'text-red-600' : 
-                                       result.stress_level > 5 ? 'text-yellow-600' : 'text-green-600';
+                    const result = await response.json();
+                    displayResults(result);
+                }} catch (error) {{
+                    console.error('Error:', error);
+                    alert('Analysis failed. Please try again.');
+                }}
+            }};
+            
+            function displayResults(result) {{
+                const resultsDiv = document.getElementById('results');
+                const resultsContent = document.getElementById('resultsContent');
+                
+                const stressColor = result.stress_level > 7 ? 'text-red-600' : 
+                                   result.stress_level > 5 ? 'text-yellow-600' : 'text-green-600';
+                
+                let html = `
+                    <div class="text-center mb-6">
+                        <h3 class="text-2xl font-bold text-gray-800">Your Stress Analysis</h3>
+                    </div>
                     
-                    let html = `
-                        <div class="text-center mb-6">
-                            <h3 class="text-2xl font-bold text-gray-800">Your Stress Analysis</h3>
-                        </div>
-                        
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                            <div class="bg-white p-6 rounded-lg shadow">
-                                <h4 class="text-lg font-semibold text-gray-700 mb-2">Stress Level</h4>
-                                <p class="text-3xl font-bold ${{stressColor}}">${{result.stress_level}}/10</p>
-                                <p class="text-sm text-gray-600">${{result.category}}</p>
-                            </div>
-                            
-                            <div class="bg-white p-6 rounded-lg shadow">
-                                <h4 class="text-lg font-semibold text-gray-700 mb-2">Assessment</h4>
-                                <p class="text-gray-800">${{result.description}}</p>
-                            </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div class="bg-white p-6 rounded-lg shadow">
+                            <h4 class="text-lg font-semibold text-gray-700 mb-2">Stress Level</h4>
+                            <p class="text-3xl font-bold ${{stressColor}}">${{result.stress_level}}/10</p>
+                            <p class="text-sm text-gray-600">${{result.category}}</p>
                         </div>
                         
                         <div class="bg-white p-6 rounded-lg shadow">
-                            <h4 class="text-lg font-semibold text-gray-700 mb-4">Personalized Recommendations</h4>
-                            <ul class="space-y-2">
-                    `;
-                    
-                    result.recommendations.forEach(rec => {{
-                        html += `<li class="flex items-start"><span class="text-green-500 mr-2">✓</span><span class="text-gray-700">${{rec}}</span></li>`;
-                    }});
-                    
-                    html += `
-                            </ul>
+                            <h4 class="text-lg font-semibold text-gray-700 mb-2">Assessment</h4>
+                            <p class="text-gray-800">${{result.description}}</p>
                         </div>
-                    `;
+                    </div>
                     
-                    resultsContent.innerHTML = html;
-                    resultsDiv.classList.remove('hidden');
-                    resultsDiv.scrollIntoView({{ behavior: 'smooth' }});
-                }}
-            </script>
-        </body>
-        </html>
-        """)
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <h4 class="text-lg font-semibold text-gray-700 mb-4">Personalized Recommendations</h4>
+                        <ul class="space-y-2">
+                `;
+                
+                result.recommendations.forEach(rec => {{
+                    html += `<li class="flex items-start"><span class="text-green-500 mr-2">✓</span><span class="text-gray-700">${{rec}}</span></li>`;
+                }});
+                
+                html += `
+                        </ul>
+                    </div>
+                `;
+                
+                resultsContent.innerHTML = html;
+                resultsDiv.classList.remove('hidden');
+                resultsDiv.scrollIntoView({{ behavior: 'smooth' }});
+            }}
+        </script>
+    </body>
+    </html>
+    """)
 
 @app.get("/health")
 async def health_check():
@@ -364,6 +361,5 @@ async def predict_stress_get(
         age, sleep_duration, physical_activity_level, heart_rate, quality_of_sleep
     )
 
-# For Vercel compatibility
-def handler(request, response):
-    return app
+# Vercel requires this exact format
+app = app
