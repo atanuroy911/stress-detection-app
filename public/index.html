@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stress Level Prediction System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/htmx.org@1.9.6"></script>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-4xl font-bold text-center text-indigo-800 mb-8">
+            🧠 Stress Level Prediction System
+        </h1>
+        
+        <div class="max-w-4xl mx-auto">
+            <!-- Health Assessment Form -->
+            <div class="bg-white rounded-xl shadow-lg p-8 mb-8">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-6">Health Assessment Form</h2>
+                
+                <form id="predictionForm" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Gender</label>
+                        <select name="gender" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500">
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Age</label>
+                        <input type="number" name="age" min="18" max="100" value="30" 
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Occupation</label>
+                        <select name="occupation" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500">
+                            <option value="Software Engineer">Software Engineer</option>
+                            <option value="Doctor">Doctor</option>
+                            <option value="Teacher">Teacher</option>
+                            <option value="Nurse">Nurse</option>
+                            <option value="Engineer">Engineer</option>
+                            <option value="Accountant">Accountant</option>
+                            <option value="Lawyer">Lawyer</option>
+                            <option value="Manager">Manager</option>
+                            <option value="Sales Representative">Sales Representative</option>
+                            <option value="Scientist">Scientist</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Sleep Duration (hours)</label>
+                        <input type="number" name="sleep_duration" min="4" max="12" step="0.1" value="7.0" 
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Quality of Sleep (1-10)</label>
+                        <input type="number" name="quality_of_sleep" min="1" max="10" value="7" 
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Physical Activity Level (minutes/day)</label>
+                        <input type="number" name="physical_activity_level" min="0" max="180" value="30" 
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">BMI Category</label>
+                        <select name="bmi_category" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500">
+                            <option value="Normal">Normal</option>
+                            <option value="Underweight">Underweight</option>
+                            <option value="Overweight">Overweight</option>
+                            <option value="Obese">Obese</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Blood Pressure (e.g., 120/80)</label>
+                        <input type="text" name="blood_pressure" value="120/80" 
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Heart Rate (BPM)</label>
+                        <input type="number" name="heart_rate" min="40" max="200" value="70" 
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Daily Steps</label>
+                        <input type="number" name="daily_steps" min="0" max="30000" value="8000" 
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Sleep Disorder</label>
+                        <select name="sleep_disorder" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500">
+                            <option value="None">None</option>
+                            <option value="Sleep Apnea">Sleep Apnea</option>
+                            <option value="Insomnia">Insomnia</option>
+                        </select>
+                    </div>
+                </form>
+                
+                <div class="mt-8">
+                    <button onclick="makePrediction()" 
+                            class="w-full bg-indigo-600 text-white py-3 px-6 rounded-md hover:bg-indigo-700 transition duration-200 font-semibold text-lg">
+                        🔮 Predict Stress Level
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Results Section -->
+            <div id="results" class="bg-white rounded-xl shadow-lg p-8 hidden">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-6">Prediction Results</h2>
+                <div id="resultsContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function makePrediction() {
+            const form = document.getElementById('predictionForm');
+            const formData = new FormData(form);
+            
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                displayResults(result);
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Prediction failed. Please try again.');
+            }
+        }
+        
+        function displayResults(result) {
+            const resultsDiv = document.getElementById('results');
+            const resultsContent = document.getElementById('resultsContent');
+            
+            let html = `
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-6 rounded-lg">
+                        <h3 class="text-xl font-semibold mb-2">Ensemble Prediction</h3>
+                        <p class="text-3xl font-bold">${result.ensemble_prediction}/10</p>
+                        <p class="text-sm opacity-90">Average from all models</p>
+                    </div>
+                    
+                    <div class="bg-gradient-to-r from-green-500 to-teal-600 text-white p-6 rounded-lg">
+                        <h3 class="text-xl font-semibold mb-2">Stress Level</h3>
+                        <p class="text-2xl font-bold">${getStressLevel(result.ensemble_prediction)}</p>
+                        <p class="text-sm opacity-90">${getStressDescription(result.ensemble_prediction)}</p>
+                    </div>
+                </div>
+                
+                <div class="mt-6">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Health Recommendations</h3>
+                    <ul class="space-y-2">
+            `;
+            
+            result.recommendations.forEach(rec => {
+                html += `<li class="flex items-start"><span class="text-green-500 mr-2">✓</span>${rec}</li>`;
+            });
+            
+            html += `
+                    </ul>
+                </div>
+                
+                <div class="mt-6">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Individual Model Predictions</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+            `;
+            
+            Object.entries(result.individual_predictions).forEach(([model, pred]) => {
+                if (pred !== null) {
+                    html += `
+                        <div class="bg-gray-50 p-3 rounded-lg text-center">
+                            <p class="text-sm text-gray-600">${model.replace('_', ' ')}</p>
+                            <p class="text-lg font-semibold text-indigo-600">${pred.toFixed(2)}</p>
+                        </div>
+                    `;
+                }
+            });
+            
+            html += '</div></div>';
+            
+            resultsContent.innerHTML = html;
+            resultsDiv.classList.remove('hidden');
+            resultsDiv.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function getStressLevel(score) {
+            if (score <= 3) return 'Low';
+            if (score <= 6) return 'Moderate'; 
+            if (score <= 8) return 'High';
+            return 'Very High';
+        }
+        
+        function getStressDescription(score) {
+            if (score <= 3) return 'You appear to be managing stress well';
+            if (score <= 6) return 'Some stress present, consider relaxation techniques';
+            if (score <= 8) return 'Elevated stress levels detected';
+            return 'High stress levels - consider professional consultation';
+        }
+    </script>
+</body>
+</html>
